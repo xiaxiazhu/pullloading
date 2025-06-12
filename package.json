@@ -1,0 +1,21 @@
+{
+  "name": "pulloading",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "vite --config vite.config.js",
+    "build": "VITE_CJS_IGNORE_WARNING=true vite build",
+    "test": "npx @web-bench/test-util"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.53.0",
+    "@types/node": "^24.0.1"
+  },
+  "dependencies": {
+    "vite": "^6.3.5"
+  }
+}
