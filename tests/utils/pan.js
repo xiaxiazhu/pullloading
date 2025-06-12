@@ -1,60 +1,37 @@
 const { read } = require('fs')
 
-/**
- * @see https://playwright.dev/docs/touch-events
- * @param {import('@playwright/test').Locator} locator
- * @param {object} opts
- * @param {number} [opts.x]
- * @param {number} [opts.y]
- * @param {number} [opts.deltaX]
- * @param {number} [opts.deltaY]
- * @param {number} [opts.steps]
- * @param {boolean} [opts.debug]
- */
 
-async function pan(locator, opts) {
-  const { x0, y0, logs } = await locator.evaluate((target, arg) => {
-    const logs = []
-    const targetB = target.getBoundingClientRect()
-    const x0 = typeof arg.x === 'number' ? arg.x + targetB.x : targetB.width / 2 + targetB.x
-    const y0 = typeof arg.y === 'number' ? arg.y + targetB.y : targetB.height / 2 + targetB.y
+async function pan(locator, deltaX, deltaY, steps) {
+  const { centerX, centerY } = await locator.evaluate((target) => {
+    const bounds = target.getBoundingClientRect();
+    const centerX = bounds.left + bounds.width / 2;
+    const centerY = bounds.top + bounds.height / 2;
+    return { centerX, centerY };
+  });
 
-    const touches = [new Touch({ identifier: Date.now(), target, pageX: x0, pageY: y0 })]
-    logs.push({ target: target.tagName, x0, y0, targetBound: targetB })
-    // MUST SET bubbles !!!
-    target.dispatchEvent(new TouchEvent('touchstart', { bubbles: true, touches }))
-    return { x0, y0, logs }
-  }, opts)
-  if (opts.debug) console.log(locator, 'touchstart', logs)
+  // Providing only clientX and clientY as the app only cares about those.
+  const touches = [{
+    identifier: 0,
+    clientX: centerX,
+    clientY: centerY,
+  }];
+  await locator.dispatchEvent('touchstart',
+      { touches, changedTouches: touches, targetTouches: touches });
 
-  const { logs: logs1 } = await locator.evaluate(
-    (target, arg) => {
-      const logs = []
-      const deltaX = arg.deltaX ?? 0
-      const deltaY = arg.deltaY ?? 0
-      const steps = arg.steps ?? 5
-      let id = Date.now()
-      logs.push({ target: target.tagName, deltaX, deltaY, steps })
+  steps = steps ?? 5;
+  deltaX = deltaX ?? 0;
+  deltaY = deltaY ?? 0;
+  for (let i = 1; i <= steps; i++) {
+    const touches = [{
+      identifier: 0,
+      clientX: centerX + deltaX * i / steps,
+      clientY: centerY + deltaY * i / steps,
+    }];
+    await locator.dispatchEvent('touchmove',
+        { touches, changedTouches: touches, targetTouches: touches });
+  }
 
-      for (let i = 1; i <= steps; i++) {
-        const x1 = arg.x0 + (deltaX * i) / steps
-        const y1 = arg.y0 + (deltaY * i) / steps
-        const touches = [new Touch({ identifier: ++id, target, pageX: x1, pageY: y1 })]
-        logs.push({ id, x1, y1 })
-        target.dispatchEvent(new TouchEvent('touchmove', { bubbles: true, touches }))
-        logs.push({ hitTarget: localStorage.target })
-      }
-      return { logs }
-    },
-    { ...opts, x0, y0 }
-  )
-  if (opts.debug) console.log(locator, 'touchmove', logs1)
-
-  await locator.evaluate((target, arg) => {
-    const touches = [new Touch({ identifier: Date.now(), target })]
-    target.dispatchEvent(new TouchEvent('touchend', { bubbles: true, touches }))
-  }, opts)
-  // if (opts.debug) console.log(locator, 'touchmove', logs1)
+  await locator.dispatchEvent('touchend');
 }
 
 
