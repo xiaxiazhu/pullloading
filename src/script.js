@@ -129,27 +129,27 @@ var getTranslate = function (x, y) {
 };
 function getPage(event, page) {
 
-    if(!event.isTrusted){
-        console.log('event.isTrusted:' + event.isTrusted);
-        console.log('event.changedTouches:' + event.changedTouches);
-        console.log('event.changedTouches.length:' + event.changedTouches.length);
-        console.log('event.changedTouches[0]:' + event.changedTouches[0]);
+    // if(!event.isTrusted){
+    //     console.log('event.isTrusted:' + event.isTrusted);
+    //     console.log('event.changedTouches:' + event.changedTouches);
+    //     console.log('event.changedTouches.length:' + event.changedTouches.length);
+    //     console.log('event.changedTouches[0]:' + event.changedTouches[0]);
         
-        // console.log('event.changedTouches[0]:' + event.changedTouches[0]);
-        // console.log('event.changedTouches[0][page]:' + event.changedTouches[0][page]);
+    //     // console.log('event.changedTouches[0]:' + event.changedTouches[0]);
+    //     // console.log('event.changedTouches[0][page]:' + event.changedTouches[0][page]);
 
-        console.log('event[page]:' + event[page]);
+    //     console.log('event[page]:' + event[page]);
 
-        return -1;
-    }
+    //     return -1;
+    // }
 
-    let str = JSON.stringify(event.changedTouches);
+    // let str = JSON.stringify(event.changedTouches);
 
-    console.log('event.changedTouches.str:' + str);
+    // console.log('event.changedTouches.str:' + str);
 
-    console.log('getPage:event.changedTouches ' + event.changedTouches + 'page ' + page );
+    // console.log('getPage:event.changedTouches ' + event.changedTouches + 'page ' + page );
 
-    console.log('getPage:event.changedTouches[clientX] ' + event.changedTouches['clientX'] + 'page ' + page );
+    console.log('getPage:event.changedTouches[pageX] ' + event.changedTouches['pageX'] + 'page ' + page );
 
     return event.changedTouches ? event.changedTouches[0][page] : event[page];
 }
@@ -246,7 +246,7 @@ $el.addEventListener('touchstart', function (event) {
         return;
     }
     ticking = false;
-    console.log('event:' + event);
+    // console.log('event:' + event);
  
     self.basePageX = getPage(event, 'pageX');
     self.basePageY = getPage(event, 'pageY');
@@ -255,6 +255,9 @@ $el.addEventListener('touchstart', function (event) {
 });
 
 $el.addEventListener('touchmove', function (e) {
+
+    console.log('eventtouchmove:'+e);
+
     if (!self.isReady) {
         return;
     }
@@ -268,10 +271,14 @@ $el.addEventListener('touchmove', function (e) {
     if (!hasEnded && isEnd()) {
         hasEnded = true;
     }
+    
 
     if (hasEnded) {
         var pageX = getPage(e, "pageX");
         var pageY = getPage(e, "pageY");
+        console.log("pageX"+ pageX)
+        console.log("pageY"+pageY)
+
         if (!startY) {
             startY = isHorizontal ? self.basePageX : self.basePageY - navigatorBarHeight;
         }

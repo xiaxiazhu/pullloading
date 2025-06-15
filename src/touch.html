@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="source" style="height: 100px; border: 1px solid blueviolet;"></div>
+</body>
+<script>
+    // 为“source”元素注册一个 touchmove 监听器。
+    const src = document.getElementById("source");
+
+    src.addEventListener(
+    "touchmove",
+    (e) => {
+        // 遍历已移动的触摸点并记录每个触摸点。
+        // 每个坐标的单位是 CSS 像素，包括 pageX/Y 坐标。
+        for (let i = 0; i < e.changedTouches.length; i++) {
+        console.log(`touchpoint[${i}].pageX = ${e.changedTouches[i].pageX}`);
+        console.log(`touchpoint[${i}].pageY = ${e.changedTouches[i].pageY}`);
+        }
+    },
+    false,
+    );
+</script>
+</html>

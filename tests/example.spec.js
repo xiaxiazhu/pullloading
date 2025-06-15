@@ -26,8 +26,11 @@ test(`pan gesture to move the loading ui`, async ({ page }) => {
     });
       const met = page.locator('#content');
 
-      for (let i = 0; i < 5; i++)
-        await pan(met,{ x: 50, y: 50, deltaX: 50, deltaY: 50 });
+      // for (let i = 0; i < 5; i++)
+      
+      await pan(met,0,-400,5);
+
+      await pan(met,0,-10,5);
 
     // const metJs = await page.evaluate(() => document.querySelector('#content'));
     
